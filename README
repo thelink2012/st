@@ -1,7 +1,17 @@
-st - simple terminal
---------------------
+# thelink2012 st fork
+
 st is a simple terminal emulator for X which sucks less.
 
+This is a fork of [st][st] with a few changes and patches applied for my own needs.
+
+Changes
+-----------
+
+The following is a list of changes in this fork:
+ 
+ - Loading settings from Xresources (from [dcat][st-xres] and [neeasade][xst]).
+ - Live-reloading of settings on USR1 signal (from [neeasade][xst]).
+ - Scrollback patch, including *Shift+MouseWheel* (from [/patches/scrollback](https://st.suckless.org/patches/scrollback/)).
 
 Requirements
 ------------
@@ -30,5 +40,9 @@ See the man page for additional details.
 
 Credits
 -------
-Based on Aurélien APTEL <aurelien dot aptel at gmail dot com> bt source code.
+Based on Aurélien APTEL (aurelien dot aptel at gmail dot com) bt source code.
+
+[st]: https://st.suckless.org/
+[st-xres]: https://github.com/dcat/st-xresources
+[xst]: https://github.com/neeasade/xst
 
