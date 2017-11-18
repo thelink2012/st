@@ -4,6 +4,8 @@ st is a simple terminal emulator for X which sucks less.
 
 This is a fork of [st][st] with a few changes and patches applied for my own needs.
 
+An `PKGBUILD` for Arch is provided, so you may ignore the installation instructions below.
+
 Changes
 -----------
 

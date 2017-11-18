@@ -1,3 +1,4 @@
+*.pkg.tar.*
 *.swp
 *.o
 /st

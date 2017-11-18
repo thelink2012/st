@@ -79,7 +79,7 @@ char *argv0;
 
 #define XRESOURCE_LOAD_FLOAT(NAME, DST, USE_GLOB)   \
 	XRESOURCE_LOAD_META(NAME, USE_GLOB)             \
-        DST = strtof(ret.addr, NULL);
+		DST = strtof(ret.addr, NULL);
 
 /* constants */
 #define ISO14755CMD		"dmenu -w %lu -p codepoint: </dev/null"
@@ -2801,12 +2801,12 @@ xrdb_load(void)
 	XrmValue ret;
 	Display *dpy;
 
-    /* This constant tells the xrdb option should be fetched from either
-     * st.option or *.option */
-    const int STGLOB = 1;
-    /* This other one, however, tells the option should be fetched only from
-     * st.option, but not *.option */
-    const int STONLY = 0;
+	/* This constant tells the xrdb option should be fetched from either
+	 * st.option or *.option */
+	const int STGLOB = 1;
+	/* This other one, however, tells the option should be fetched only from
+	 * st.option, but not *.option */
+	const int STONLY = 0;
 
 	if(!(dpy = XOpenDisplay(NULL)))
 		die("Can't open display\n");

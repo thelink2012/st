@@ -1794,8 +1794,8 @@ run:
 	}
 	setlocale(LC_CTYPE, "");
 	XSetLocaleModifiers("");
-    xrdb_load();
-    signal(SIGUSR1, reload);
+	xrdb_load();
+	signal(SIGUSR1, reload);
 	tnew(MAX(cols, 1), MAX(rows, 1));
 	xinit();
 	selinit();
