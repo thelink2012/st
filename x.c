@@ -1701,6 +1701,28 @@ run(void)
 	}
 }
 
+void
+reload(int sig)
+{
+	xrdb_load();
+
+	/* colors, fonts */
+	xloadcols();
+	xunloadfonts();
+	xloadfonts(font, 0);
+
+	/* pretend the window just got resized */
+	cresize(win.w, win.h);
+	ttyresize();
+
+	redraw();
+
+	/* triggers re-render if we're visible. */
+	ttywrite("\033[O", 3);
+
+	signal(SIGUSR1, reload);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -1762,6 +1784,7 @@ run:
 	setlocale(LC_CTYPE, "");
 	XSetLocaleModifiers("");
     xrdb_load();
+    signal(SIGUSR1, reload);
 	tnew(MAX(cols, 1), MAX(rows, 1));
 	xinit();
 	selinit();
