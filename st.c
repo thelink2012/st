@@ -27,6 +27,7 @@
 /* X11 */
 #include <X11/cursorfont.h>
 #include <X11/Xft/Xft.h>
+#include <X11/Xresource.h>
 
 char *argv0;
 
@@ -58,6 +59,27 @@ char *argv0;
 #define ISCONTROLC1(c)		(BETWEEN(c, 0x80, 0x9f))
 #define ISCONTROL(c)		(ISCONTROLC0(c) || ISCONTROLC1(c))
 #define ISDELIM(u)		(utf8strchr(worddelimiters, u) != NULL)
+
+#define XRESOURCE_LOAD_META(NAME, USE_GLOB)                                     \
+	if(!XrmGetResource(xrdb, "st." NAME, "st." NAME, &type, &ret))              \
+		(USE_GLOB) && XrmGetResource(xrdb, "*." NAME, "*." NAME, &type, &ret);  \
+	if (ret.addr != NULL && !strncmp("String", type, 64))
+
+#define XRESOURCE_LOAD_STRING(NAME, DST, USE_GLOB) \
+	XRESOURCE_LOAD_META(NAME, USE_GLOB)            \
+		DST = ret.addr;
+
+#define XRESOURCE_LOAD_CHAR(NAME, DST, USE_GLOB)    \
+	XRESOURCE_LOAD_META(NAME, USE_GLOB)             \
+		DST = ret.addr[0];
+
+#define XRESOURCE_LOAD_INTEGER(NAME, DST, USE_GLOB)  \
+	XRESOURCE_LOAD_META(NAME, USE_GLOB)              \
+		DST = strtoul(ret.addr, NULL, 10);
+
+#define XRESOURCE_LOAD_FLOAT(NAME, DST, USE_GLOB)   \
+	XRESOURCE_LOAD_META(NAME, USE_GLOB)             \
+        DST = strtof(ret.addr, NULL);
 
 /* constants */
 #define ISO14755CMD		"dmenu -w %lu -p codepoint: </dev/null"
@@ -2704,3 +2726,91 @@ usage(void)
 	    "          [-T title] [-t title] [-w windowid] -l line"
 	    " [stty_args ...]\n", argv0, argv0);
 }
+
+void
+xrdb_load(void)
+{
+	/* XXX */
+	char *xrm;
+	char *type;
+	XrmDatabase xrdb;
+	XrmValue ret;
+	Display *dpy;
+
+    /* This constant tells the xrdb option should be fetched from either
+     * st.option or *.option */
+    const int STGLOB = 1;
+    /* This other one, however, tells the option should be fetched only from
+     * st.option, but not *.option */
+    const int STONLY = 0;
+
+	if(!(dpy = XOpenDisplay(NULL)))
+		die("Can't open display\n");
+
+	XrmInitialize();
+	xrm = XResourceManagerString(dpy);
+
+	if (xrm != NULL) {
+		xrdb = XrmGetStringDatabase(xrm);
+
+		/* handling colors here without macros to do via loop. */
+		int i = 0;
+		char loadValue[12] = "";
+		for (i = 0; i < 256; i++)
+		{
+			sprintf(loadValue, "%s%d", "st.color", i);
+
+			if(!XrmGetResource(xrdb, loadValue, loadValue, &type, &ret))
+			{
+				sprintf(loadValue, "%s%d", "*.color", i);
+				if (!XrmGetResource(xrdb, loadValue, loadValue, &type, &ret))
+					/* reset if not found (unless in range for defaults). */
+					if (i > 15)
+						colorname[i] = NULL;
+			}
+
+			if (ret.addr != NULL && !strncmp("String", type, 64))
+				colorname[i] = ret.addr;
+		}
+
+		XRESOURCE_LOAD_STRING("foreground", colorname[256], STGLOB);
+		XRESOURCE_LOAD_STRING("background", colorname[257], STGLOB);
+		XRESOURCE_LOAD_STRING("cursorfg", colorname[258], STGLOB)
+		else {
+		  // this looks confusing because we are chaining off of the if
+		  // in the macro. probably we should be wrapping everything blocks
+		  // so this isn't possible...
+		  defaultcs = defaultfg;
+		}
+		XRESOURCE_LOAD_STRING("reverse-cursor", colorname[259], STGLOB)
+		else {
+		  // see above.
+		  defaultrcs = defaultbg;
+		}
+		XRESOURCE_LOAD_STRING("font", font, STGLOB);
+		XRESOURCE_LOAD_STRING("termname", termname, STGLOB);
+		XRESOURCE_LOAD_STRING("shell", shell, STGLOB);
+
+		XRESOURCE_LOAD_INTEGER("xfps", xfps, STONLY);
+		XRESOURCE_LOAD_INTEGER("actionfps", actionfps, STONLY);
+		XRESOURCE_LOAD_INTEGER("blinktimeout", blinktimeout, STONLY);
+		XRESOURCE_LOAD_INTEGER("bellvolume", bellvolume, STONLY);
+		//XRESOURCE_LOAD_INTEGER("bold_font", bold_font, STONLY);
+		XRESOURCE_LOAD_INTEGER("borderpx", borderpx, STONLY);
+		XRESOURCE_LOAD_INTEGER("cursorshape", win.cursor, STONLY);
+		//cursorblinkstate = 1; // in case if cursor shape was changed from a blinking one to a non-blinking
+		//XRESOURCE_LOAD_INTEGER("cursorthickness", cursorthickness, STONLY);
+		//XRESOURCE_LOAD_INTEGER("cursorblinkstyle", cursorblinkstyle, STONLY);
+		//XRESOURCE_LOAD_INTEGER("cursorblinkontype", cursorblinkontype, STONLY);
+
+		XRESOURCE_LOAD_FLOAT("cwscale", cwscale, STONLY);
+		XRESOURCE_LOAD_FLOAT("chscale", chscale, STONLY);
+
+		//XRESOURCE_LOAD_CHAR("prompt_char", prompt_char, STONLY);
+
+		//if (!xrdb_overrides_alpha)
+		//    XRESOURCE_LOAD_INTEGER("opacity", alpha, STGLOB);
+	}
+	XFlush(dpy);
+}
+

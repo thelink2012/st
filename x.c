@@ -1761,6 +1761,7 @@ run:
 	}
 	setlocale(LC_CTYPE, "");
 	XSetLocaleModifiers("");
+    xrdb_load();
 	tnew(MAX(cols, 1), MAX(rows, 1));
 	xinit();
 	selinit();

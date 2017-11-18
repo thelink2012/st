@@ -215,6 +215,7 @@ void *xmalloc(size_t);
 char *xstrdup(char *);
 
 void usage(void);
+void xrdb_load(void);
 
 /* Globals */
 extern TermWindow win;
@@ -237,7 +238,7 @@ extern double usedfontsize;
 extern double defaultfontsize;
 
 /* config.h globals */
-extern char font[];
+extern char *font;
 extern int borderpx;
 extern float cwscale;
 extern float chscale;
@@ -248,7 +249,7 @@ extern unsigned int xfps;
 extern unsigned int actionfps;
 extern unsigned int cursorthickness;
 extern unsigned int blinktimeout;
-extern char termname[];
+extern char *termname;
 extern const char *colorname[];
 extern size_t colornamelen;
 extern unsigned int defaultfg;

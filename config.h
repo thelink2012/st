@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-char font[] = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
+char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
 int borderpx = 2;
 
 /*
@@ -16,7 +16,7 @@ int borderpx = 2;
  * 4: value of shell in /etc/passwd
  * 5: value of shell in config.h
  */
-static char shell[] = "/bin/sh";
+static char *shell = "/bin/sh";
 static char *utmp = NULL;
 static char stty_args[] = "stty raw pass8 nl -echo -iexten -cstopb 38400";
 
@@ -63,7 +63,7 @@ unsigned int cursorthickness = 2;
 static int bellvolume = 0;
 
 /* default TERM value */
-char termname[] = "st-256color";
+char *termname = "st-256color";
 
 /*
  * spaces per tab
@@ -107,8 +107,11 @@ const char *colorname[] = {
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#cccccc",
-	"#555555",
+	"#a7a7a7", 		/* [default] defaultfg */
+	"#1e1e1e",		/* [default] defaultbg */
+	"#a7a7a7",      /* [default] defaultcs */
+	"#1e1e1e",		/* [default] defaultrcs */
+	"black",
 };
 
 
@@ -116,10 +119,10 @@ const char *colorname[] = {
  * Default colors (colorname index)
  * foreground, background, cursor, reverse cursor
  */
-unsigned int defaultfg = 7;
-unsigned int defaultbg = 0;
-unsigned int defaultcs = 256;
-unsigned int defaultrcs = 257;
+unsigned int defaultfg = 256;
+unsigned int defaultbg = 257;
+unsigned int defaultcs = 258;
+unsigned int defaultrcs = 259;
 
 /*
  * Default shape of cursor
